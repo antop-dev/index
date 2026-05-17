@@ -27,7 +27,7 @@ jobs:
         run: ./gradlew bootJar
 
       - name: Rename to app.jar
-        run: mv build/libs/gunpla-decal-*.jar build/libs/app.jar
+        run: mv build/libs/index-*.jar build/libs/app.jar
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
