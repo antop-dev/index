@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: index
+  datasource:
+    url: jdbc:sqlite:${app.db-path}
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      connection-init-sql: "PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON"
+  jpa:
+    open-in-view: false
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+app:
+  db-path: ${DB_PATH:./index.db}
+  nginx-conf-path: ${NGINX_CONF_PATH:./p.antop.ai}
+  thumbnails-dir: ${THUMBNAILS_DIR:./thumbnails}
+  base-url: ${BASE_URL:https://p.antop.ai}
