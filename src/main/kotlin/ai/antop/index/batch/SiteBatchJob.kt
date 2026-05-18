@@ -9,6 +9,7 @@ import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.web.util.UriComponentsBuilder
 import java.io.File
 import java.time.LocalDateTime
 
@@ -31,8 +32,15 @@ class SiteBatchJob(
             return
         }
 
-        val paths = nginxConfParser.parseUrls(configFile.readText())
-        val urls = paths.map { "${appProperties.baseUrl}/$it" }
+        val locations = nginxConfParser.parseLocations(configFile.readText())
+        val urls =
+            locations.map {
+                UriComponentsBuilder
+                    .fromUriString(appProperties.baseUrl)
+                    .path(it)
+                    .toUriString()
+                    .trimEnd('/')
+            }
         logger.info("Found ${urls.size} URLs in nginx.conf")
 
         val existingUrls = siteRepository.findAllUrls()
