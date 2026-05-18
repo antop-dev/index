@@ -9,7 +9,7 @@ class NginxConfParser {
     fun parseUrls(content: String): List<String> =
         regex
             .findAll(content)
-            .map { it.groupValues[1] }
-            .filter { it != "/" }
+            .map { it.groupValues[1].trimEnd('/') }
+            .filter { it.isBlank() || it != "/" }
             .toList()
 }
