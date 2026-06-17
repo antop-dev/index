@@ -7,6 +7,7 @@ import ai.antop.index.service.NginxConfParser
 import ai.antop.index.service.ScreenshotService
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
@@ -66,6 +67,16 @@ class SiteBatchJob(
         val thumbnailUuid = screenshotService.takeScreenshot(url)
         val now = LocalDateTime.now()
         val existing = siteRepository.findByUrl(url)
+        if (existing != null && thumbnailUuid != null && existing.thumbnailUuid != null) {
+            val oldFile = File(appProperties.thumbnailsDir, "${existing.thumbnailUuid}.png")
+            try {
+                if (!oldFile.delete()) {
+                    logger.warn("Failed to delete old thumbnail: ${oldFile.path}")
+                }
+            } catch (e: Exception) {
+                logger.warn("Failed to delete old thumbnail: ${oldFile.path}", e)
+            }
+        }
         val site =
             existing?.copy(
                 name = name,
@@ -82,7 +93,8 @@ class SiteBatchJob(
         try {
             Jsoup
                 .connect(url)
-                .timeout(10_000)
+                .timeout(3_000)
+                .header(HttpHeaders.ACCEPT_LANGUAGE, "ko,en-US;q=0.9,en;q=0.8")
                 .get()
                 .title()
                 .takeIf { it.isNotBlank() }

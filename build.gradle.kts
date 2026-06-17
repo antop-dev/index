@@ -33,6 +33,7 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.49.1.0")
     implementation("org.jsoup:jsoup:1.18.3")
     implementation("com.microsoft.playwright:playwright:1.51.0")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
