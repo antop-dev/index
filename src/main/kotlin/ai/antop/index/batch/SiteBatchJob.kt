@@ -63,7 +63,7 @@ class SiteBatchJob(
     }
 
     private fun processUrl(url: String) {
-        val name = fetchTitle(url)
+        val (name, description) = fetchSiteInfo(url)
         val thumbnailUuid = screenshotService.takeScreenshot(url)
         val now = LocalDateTime.now()
         val existing = siteRepository.findByUrl(url)
@@ -80,26 +80,31 @@ class SiteBatchJob(
         val site =
             existing?.copy(
                 name = name,
+                description = description,
                 thumbnailUuid = thumbnailUuid ?: existing.thumbnailUuid,
                 enabled = true,
                 updatedAt = now,
             )
-                ?: Site(url = url, name = name, thumbnailUuid = thumbnailUuid, createdAt = now, updatedAt = now)
+                ?: Site(url = url, name = name, description = description, thumbnailUuid = thumbnailUuid, createdAt = now, updatedAt = now)
         siteRepository.save(site)
         logger.info("Processed: $url (name=$name)")
     }
 
-    private fun fetchTitle(url: String): String? =
+    private data class SiteInfo(val name: String?, val description: String?)
+
+    private fun fetchSiteInfo(url: String): SiteInfo =
         try {
-            Jsoup
-                .connect(url)
-                .timeout(3_000)
-                .header(HttpHeaders.ACCEPT_LANGUAGE, "ko,en-US;q=0.9,en;q=0.8")
-                .get()
-                .title()
-                .takeIf { it.isNotBlank() }
+            val doc =
+                Jsoup
+                    .connect(url)
+                    .timeout(3_000)
+                    .header(HttpHeaders.ACCEPT_LANGUAGE, "ko,en-US;q=0.9,en;q=0.8")
+                    .get()
+            val name = doc.title().takeIf { it.isNotBlank() }
+            val description = doc.select("meta[name=description]").attr("content").takeIf { it.isNotBlank() }
+            SiteInfo(name, description)
         } catch (e: Exception) {
-            logger.warn("Failed to fetch title from $url: ${e.message}")
-            null
+            logger.warn("Failed to fetch site info from $url: ${e.message}")
+            SiteInfo(null, null)
         }
 }

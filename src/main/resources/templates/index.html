@@ -51,7 +51,8 @@
                rel="noopener noreferrer"
                class="site-card group block bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 hover:border-zinc-600 hover:shadow-2xl hover:shadow-black/50 transition-all duration-200"
                th:data-name="${site.name != null ? site.name.toLowerCase() : ''}"
-               th:data-url="${site.url.toLowerCase()}">
+               th:data-url="${site.url.toLowerCase()}"
+               th:data-description="${site.description != null ? site.description.toLowerCase() : ''}">
 
                 <!-- Thumbnail -->
                 <div class="relative aspect-video bg-zinc-800 overflow-hidden">
@@ -72,6 +73,9 @@
                         th:text="${site.name ?: site.url}"></h2>
                     <p class="text-zinc-500 text-xs mt-1.5 truncate"
                        th:text="${site.url}"></p>
+                    <p th:if="${site.description != null}"
+                       class="text-zinc-400 text-xs mt-1.5 line-clamp-2 leading-relaxed"
+                       th:text="${site.description}"></p>
                 </div>
 
             </a>
@@ -97,7 +101,8 @@
             cards.forEach(card => {
                 const name = card.dataset.name || '';
                 const url = card.dataset.url || '';
-                const match = !q || name.includes(q) || url.includes(q);
+                const description = card.dataset.description || '';
+                const match = !q || name.includes(q) || url.includes(q) || description.includes(q);
                 card.style.display = match ? '' : 'none';
                 if (match) {
                     visible++;
