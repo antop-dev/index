@@ -50,6 +50,7 @@ class ScreenshotService(
                                     page.waitForLoadState(LoadState.NETWORKIDLE)
                                     logger.debug { "Network idle reached" }
 
+                                    page.waitForTimeout(5_000.0)
                                     page.screenshot(Page.ScreenshotOptions().setPath(outputPath))
                                     logger.info { "Screenshot saved: $outputPath" }
                                 }

@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index</title>
-    <link rel="stylesheet" th:href="@{/css/tailwind.css}">
+    <link rel="stylesheet" th:href="@{/vendor/font-awesome/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/commons.css}">
+    <script th:src="@{/vendor/tailwind/tailwind.min.js}"></script>
 </head>
-<body class="bg-zinc-950 text-white min-h-screen">
+<body class="bg-zinc-950 text-white min-h-screen min-w-[400px]">
 
     <!-- Header -->
     <header class="sticky top-0 z-10 bg-zinc-950/90 backdrop-blur-sm border-b border-zinc-800">
@@ -14,37 +16,43 @@
             <div class="flex items-center gap-4 flex-1 min-w-0">
                 <span class="text-lg font-bold tracking-tight shrink-0">Index</span>
                 <div class="relative w-full max-w-xs">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none"
-                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500 pointer-events-none"></i>
                     <input id="search"
                            type="text"
                            placeholder="프로젝트 검색..."
                            autocomplete="off"
-                           class="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-9 pr-4 py-2 text-sm placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                           class="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-9 pr-4 py-2 text-sm placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                           aria-label="프로젝트 검색">
                 </div>
             </div>
-            <a href="https://github.com/antop-dev/index"
-               target="_blank"
-               rel="noopener noreferrer"
-               class="shrink-0 flex items-center gap-3 text-zinc-400 hover:text-white transition-colors text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-                </svg>
-                <span class="hidden sm:inline">antop-dev/index</span>
-            </a>
+            <div class="shrink-0 flex items-center">
+                <a href="https://github.com/antop-dev/index"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="flex items-center gap-1 px-2 text-zinc-400 hover:text-white transition-colors text-sm">
+                    <i class="fa-brands fa-github"></i>
+                    <span class="nav-label">GitHub</span>
+                </a>
+                <a href="mailto:antop@kakao.com"
+                   class="flex items-center gap-1 px-2 text-zinc-400 hover:text-white transition-colors text-sm">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="nav-label">Email</span>
+                </a>
+                <a href="https://ko-fi.com/antop?hidefeed=true&widget=true"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="flex items-center gap-1 px-2 text-zinc-400 hover:text-white transition-colors text-sm">
+                    <i class="fa-solid fa-mug-hot"></i>
+                    <span class="nav-label">Donate</span>
+                </a>
+            </div>
         </div>
     </header>
 
     <!-- Main -->
     <main class="max-w-screen-xl mx-auto px-6 py-8">
 
-        <p class="text-zinc-500 text-sm mb-6">
-            <span id="count" th:text="${#lists.size(sites)}">0</span>개 프로젝트
-        </p>
-
-        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+<div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <a th:each="site : ${sites}"
                th:href="${site.url}"
                target="_blank"
@@ -92,8 +100,6 @@
         const search = document.getElementById('search');
         const cards = document.querySelectorAll('.site-card');
         const empty = document.getElementById('empty');
-        const count = document.getElementById('count');
-
         search.addEventListener('input', () => {
             const q = search.value.trim().toLowerCase();
             let visible = 0;
@@ -109,7 +115,6 @@
                 }
             });
 
-            count.textContent = visible;
             empty.classList.toggle('hidden', visible > 0 || cards.length === 0);
         });
     </script>
