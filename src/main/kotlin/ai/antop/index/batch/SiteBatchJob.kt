@@ -77,27 +77,26 @@ class SiteBatchJob(
                 logger.warn("Failed to delete old thumbnail: ${oldFile.path}", e)
             }
         }
-        val site =
-            existing
-                ?.let {
-                    Site(
-                        name = name,
-                        description = description,
-                        icon = icon,
-                        thumbnailUuid = thumbnailUuid ?: it.thumbnailUuid,
-                        enabled = true,
-                        updatedAt = now,
-                    )
-                } ?: Site(
-                url = url,
-                name = name,
-                description = description,
-                icon = icon,
-                thumbnailUuid = thumbnailUuid,
-                createdAt = now,
-                updatedAt = now,
-            )
-        siteRepository.save(site)
+        if (existing != null) { // 기존 url이 있으면 update
+            existing.name = name
+            existing.description = description
+            existing.icon = icon
+            thumbnailUuid?.let { existing.thumbnailUuid = it }
+            existing.enabled = true
+            existing.updatedAt = now
+        } else { // 없으면 insert
+            val site =
+                Site(
+                    url = url,
+                    name = name,
+                    description = description,
+                    icon = icon,
+                    thumbnailUuid = thumbnailUuid,
+                    createdAt = now,
+                    updatedAt = now,
+                )
+            siteRepository.save(site)
+        }
         logger.info("Processed: $url (name=$name, icon=$icon)")
     }
 
