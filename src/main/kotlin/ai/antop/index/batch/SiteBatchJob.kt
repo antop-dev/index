@@ -67,7 +67,7 @@ class SiteBatchJob(
         val thumbnailUuid = screenshotService.takeScreenshot(url)
         val now = LocalDateTime.now()
         val existing = siteRepository.findByUrl(url)
-        if (existing != null && thumbnailUuid != null && existing.thumbnailUuid != null) {
+        if (existing != null && thumbnailUuid != null) {
             val oldFile = File(appProperties.thumbnailsDir, "${existing.thumbnailUuid}.png")
             try {
                 if (!oldFile.delete()) {
@@ -81,9 +81,10 @@ class SiteBatchJob(
             existing.name = name
             existing.description = description
             existing.icon = icon
-            thumbnailUuid?.let { existing.thumbnailUuid = it }
+            existing.thumbnailUuid = thumbnailUuid
             existing.enabled = true
             existing.updatedAt = now
+            siteRepository.save(existing)
         } else { // 없으면 insert
             val site =
                 Site(
