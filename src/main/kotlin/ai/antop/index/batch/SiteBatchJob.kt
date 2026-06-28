@@ -63,7 +63,7 @@ class SiteBatchJob(
     }
 
     private fun processUrl(url: String) {
-        val (name, description) = fetchSiteInfo(url)
+        val (name, description, icon) = fetchSiteInfo(url)
         val thumbnailUuid = screenshotService.takeScreenshot(url)
         val now = LocalDateTime.now()
         val existing = siteRepository.findByUrl(url)
@@ -78,19 +78,34 @@ class SiteBatchJob(
             }
         }
         val site =
-            existing?.copy(
+            existing
+                ?.let {
+                    Site(
+                        name = name,
+                        description = description,
+                        icon = icon,
+                        thumbnailUuid = thumbnailUuid ?: it.thumbnailUuid,
+                        enabled = true,
+                        updatedAt = now,
+                    )
+                } ?: Site(
+                url = url,
                 name = name,
                 description = description,
-                thumbnailUuid = thumbnailUuid ?: existing.thumbnailUuid,
-                enabled = true,
+                icon = icon,
+                thumbnailUuid = thumbnailUuid,
+                createdAt = now,
                 updatedAt = now,
             )
-                ?: Site(url = url, name = name, description = description, thumbnailUuid = thumbnailUuid, createdAt = now, updatedAt = now)
         siteRepository.save(site)
-        logger.info("Processed: $url (name=$name)")
+        logger.info("Processed: $url (name=$name, icon=$icon)")
     }
 
-    private data class SiteInfo(val name: String?, val description: String?)
+    private data class SiteInfo(
+        val name: String?,
+        val description: String?,
+        val icon: String?,
+    )
 
     private fun fetchSiteInfo(url: String): SiteInfo =
         try {
@@ -102,9 +117,20 @@ class SiteBatchJob(
                     .get()
             val name = doc.title().takeIf { it.isNotBlank() }
             val description = doc.select("meta[name=description]").attr("content").takeIf { it.isNotBlank() }
-            SiteInfo(name, description)
+            val icon =
+                doc
+                    .select("link[rel~=(?i)^(shortcut )?icon$]")
+                    .firstOrNull()
+                    ?.absUrl("href")
+                    ?.ifBlank { null }
+                    ?: doc
+                        .select("link[rel=apple-touch-icon]")
+                        .firstOrNull()
+                        ?.absUrl("href")
+                        ?.ifBlank { null }
+            SiteInfo(name, description, icon)
         } catch (e: Exception) {
             logger.warn("Failed to fetch site info from $url: ${e.message}")
-            SiteInfo(null, null)
+            SiteInfo(null, null, null)
         }
 }

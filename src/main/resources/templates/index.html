@@ -77,8 +77,13 @@
 
                 <!-- Info -->
                 <div class="p-4">
-                    <h2 class="font-semibold text-white text-sm leading-tight truncate"
-                        th:text="${site.name ?: site.url}"></h2>
+                    <h2 class="font-semibold text-white text-sm leading-tight flex items-center gap-1.5 min-w-0">
+                        <img th:if="${site.icon != null}"
+                             th:src="${site.icon}"
+                             class="w-4 h-4 shrink-0 object-contain"
+                             alt="">
+                        <span class="truncate" th:text="${site.name ?: site.url}"></span>
+                    </h2>
                     <p class="text-zinc-500 text-xs mt-1.5 truncate"
                        th:text="${site.url}"></p>
                     <p th:if="${site.description != null}"

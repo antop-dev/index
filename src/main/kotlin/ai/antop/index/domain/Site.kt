@@ -9,13 +9,14 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "site")
-data class Site(
+class Site(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
     var url: String = "",
     var name: String? = null,
     var description: String? = null,
+    var icon: String? = null,
     var thumbnailUuid: String? = null,
     var enabled: Boolean = true,
     var createdAt: LocalDateTime = LocalDateTime.now(),
