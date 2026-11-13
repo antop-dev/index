@@ -1,1 +1,22 @@
 @media (max-width: 639px) { .nav-label { display: none; } }
+
+/* 무지개 글자 (Donate 링크) */
+.rainbow-text {
+    background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff0000);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-weight: 900;
+    animation: rainbow-flow 1s linear infinite;
+}
+
+@keyframes rainbow-flow {
+    0% { background-position: 0 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rainbow-text { animation: none; }
+}
