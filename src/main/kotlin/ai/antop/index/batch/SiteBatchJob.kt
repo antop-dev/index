@@ -81,7 +81,7 @@ class SiteBatchJob(
             existing.name = name
             existing.description = description
             existing.icon = icon
-            existing.thumbnailUuid = thumbnailUuid
+            existing.thumbnailUuid = thumbnailUuid ?: existing.thumbnailUuid
             existing.enabled = true
             existing.updatedAt = now
             siteRepository.save(existing)
